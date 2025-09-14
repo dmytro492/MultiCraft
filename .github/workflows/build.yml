@@ -26,7 +26,7 @@ on:
       - '.github/workflows/**.yml'
 
 jobs:
-  # This is our minor gcc compiler
+  # This is our minor gcc compilerr
 #  gcc_6:
 #    runs-on: ubuntu-18.04
 #    steps:
