@@ -93,6 +93,19 @@ struct MediaInfo
 	}
 };
 
+struct InMemoryMediaInfo
+{
+	std::string data;
+	std::string sha1_digest;
+
+	InMemoryMediaInfo(const std::string &data_="",
+	                  const std::string &sha1_digest_=""):
+		data(data_),
+		sha1_digest(sha1_digest_)
+	{
+	}
+};
+
 struct ServerSoundParams
 {
 	enum Type {
@@ -383,6 +396,15 @@ public:
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
 
+	inline bool isCompatPlayerModel(const std::string &model_name)
+	{
+		return std::find(m_compat_player_models.begin(), m_compat_player_models.end(), model_name) != m_compat_player_models.end();
+	}
+	const std::vector<std::string> getCompatPlayerModels()
+	{
+		return m_compat_player_models;
+	}
+
 private:
 	friend class EmergeThread;
 	friend class RemoteClient;
@@ -406,7 +428,7 @@ private:
 
 	void init();
 
-	void SendMovement(session_t peer_id);
+	void SendMovement(session_t peer_id, u16 protocol_version);
 	void SendHP(session_t peer_id, u16 hp);
 	void SendBreath(session_t peer_id, u16 breath);
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
@@ -658,6 +680,7 @@ private:
 
 	// media files known to server
 	std::unordered_map<std::string, MediaInfo> m_media;
+	std::unordered_map<std::string, InMemoryMediaInfo> m_compat_media;
 
 	/*
 		Sounds
@@ -691,6 +714,8 @@ private:
 	MetricCounterPtr m_aom_buffer_counter;
 	MetricCounterPtr m_packet_recv_counter;
 	MetricCounterPtr m_packet_recv_processed_counter;
+
+	std::vector<std::string> m_compat_player_models;
 };
 
 /*

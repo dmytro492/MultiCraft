@@ -355,7 +355,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	}
 }
 
-void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int compression_level)
+void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int compression_level, std::string formspec_prepend)
 {
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
@@ -423,6 +423,7 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 	/*
 		Node metadata
 	*/
+<<<<<<< HEAD
 	if (version >= 29) {
 		m_node_metadata.serialize(os, version, disk);
 	} else {
@@ -431,6 +432,11 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		// prior to 29 node data was compressed individually
 		compress(os_raw.str(), os, version, compression_level);
 	}
+=======
+	std::ostringstream oss(std::ios_base::binary);
+	m_node_metadata.serialize(oss, version, disk, false, formspec_prepend);
+	compressZlib(oss.str(), os, compression_level);
+>>>>>>> parent of fc02a37cd (Drop MT 0.4 support (#161))
 
 	/*
 		Data that goes to disk, but not the network
